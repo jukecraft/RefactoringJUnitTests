@@ -1,4 +1,3 @@
-package demo;
 
 public class Validator {
     public void validate(Conference conference) {

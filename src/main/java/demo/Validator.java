@@ -8,6 +8,4 @@ public class Validator {
         valid = valid && conference.getDate() != null;
         if (!valid) throw new RuntimeException("Invalid demo.Conference");
     }
-
-
 }

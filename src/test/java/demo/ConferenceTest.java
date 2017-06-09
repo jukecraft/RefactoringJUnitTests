@@ -1,77 +1,53 @@
 package demo;
 
-import demo.*;
 import org.junit.Test;
 
-import java.util.Date;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static demo.ConferenceBuilder.aConference;
+import static demo.Quality.*;
+import static demo.RankedTalkMatcher.*;
+import static demo.TalkBuilder.aTalk;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertThat;
 
 public class ConferenceTest {
     private Service service = new Service();
 
     @Test
     public void test() {
-        // Create demo.Conference + Save
-        Conference conference = new Conference();
-        conference.setDate(new Date());
-        conference.setName("Nordic Testing Days 2017");
-        conference.setPlace(new Place("Tallinn", "Radisson Blu Olümpia", 148.78, 19.18));
+        Conference conference = aConference().build();
         service.save(conference);
 
-        // Create demo.Talk 1 + Save
-        Talk talk1 = new Talk();
-        talk1.setTitle("Refactoring JUnit Tests");
-        talk1.addSpeaker("Franzi");
-        talk1.addSpeaker("Tom");
+        Talk talk1 = aTalk()
+                .withTitle("Refactoring JUnit Tests")
+                .build();
         service.save(conference, talk1);
 
-        // Create demo.Talk 2 + Save
-        Talk talk2 = new Talk();
-        talk2.setTitle("Object Calisthenics");
-        talk2.addSpeaker("Laura");
-        talk2.addSpeaker("James");
+        Talk talk2 = aTalk()
+                .withTitle("Object Calisthenics")
+                .build();
+
         service.save(conference, talk2);
 
-        // Create Rank for demo.Talk 1 + Save
         Ranking ranking1 = new Ranking();
-        ranking1.setVolumeOfSpeakers(Quality.AVERAGE);
-        ranking1.setActingTalent(Quality.AVERAGE);
-        ranking1.setAudienceParticipation(Quality.EXCELLENT);
-        ranking1.setAction(Quality.MEH);
+        ranking1.setVolumeOfSpeakers(AVERAGE);
+        ranking1.setActingTalent(AVERAGE);
+        ranking1.setAudienceParticipation(EXCELLENT);
+        ranking1.setAction(MEH);
         service.save(talk1, ranking1);
 
-        // Create Rank for demo.Talk 2 + Save
         Ranking ranking2 = new Ranking();
-        ranking2.setVolumeOfSpeakers(Quality.AVERAGE);
-        ranking2.setActingTalent(Quality.GREAT);
-        ranking2.setAudienceParticipation(Quality.EXCELLENT);
-        ranking2.setAction(Quality.GREAT);
+        ranking2.setVolumeOfSpeakers(AVERAGE);
+        ranking2.setActingTalent(GREAT);
+        ranking2.setAudienceParticipation(EXCELLENT);
+        ranking2.setAction(GREAT);
         service.save(talk2, ranking2);
 
-        // Retrieve demo.Talk-demo.Ranking
         RankedTalks rankedTalks = service.getRankedTalks(conference);
 
-        int checkedTalks = 0;
-        for (RankedTalk rankedTalk : rankedTalks) {
-            switch (rankedTalk.getTalk().getTitle()) {
-                case "Refactoring JUnit Tests":
-                    // Check result (demo.Talk 1)
-                    assertThat(rankedTalk.getRank(), is(23));
-                    assertThat(rankedTalk.getRanking(), is(ranking1));
-                    break;
-                case "Object Calisthenics":
-                    // check result (demo.Talk 2)
-                    assertThat(rankedTalk.getRank(), is(42));
-                    assertThat(rankedTalk.getRanking(), is(ranking2));
-                    break;
-                default:
-                    fail("Unknown demo.Talk");
-                    break;
-            }
-            checkedTalks++;
-        }
-        assertEquals(2, checkedTalks);
+        assertThat(rankedTalks, contains(
+                allOf(hasTitle("Refactoring JUnit Tests"), hasRank(23), hasRanking(ranking1)),
+                allOf(hasTitle("Object Calisthenics"), hasRank(42), hasRanking(ranking2))
+        ));
     }
 }

@@ -1,3 +1,4 @@
+package demo;
 
 public class Validator {
     public void validate(Conference conference) {
@@ -5,7 +6,7 @@ public class Validator {
         valid = valid && conference.getName() != null && conference.getName().length() >= 3;
         valid = valid && conference.getPlace() != null;
         valid = valid && conference.getDate() != null;
-        if (!valid) throw new RuntimeException("Invalid Conference");
+        if (!valid) throw new RuntimeException("Invalid demo.Conference");
     }
 
 

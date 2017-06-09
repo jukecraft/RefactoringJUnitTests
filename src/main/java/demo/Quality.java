@@ -1,3 +1,4 @@
+package demo;
 
 public interface Quality {
 
